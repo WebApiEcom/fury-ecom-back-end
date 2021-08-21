@@ -6,6 +6,8 @@ const OrderRouter = require("./routes/orders");
 const admin = require("./routes/admin");
 const usersRoutes = require("./routes/user");
 const contactRoutes = require("./routes/contact");
+const client = require("./routes/client");
+
 // CREATE EXPRESS SERVER
 const app = express();
 
@@ -18,6 +20,8 @@ app.use("/orders", OrderRouter);
 app.use("/fury/admin", admin);
 app.use("/fury", usersRoutes); // Users Routes
 app.use("/furycontact", contactRoutes); // Contacts Routes
+app.use("/fury/client", client);
+
 mongoose
   .connect(process.env.DB_CONNECTION_URL, {
     useNewUrlParser: true,
