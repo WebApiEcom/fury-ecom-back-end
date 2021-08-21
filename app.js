@@ -4,7 +4,8 @@ const cors = require("cors");
 require("dotenv/config");
 const OrderRouter = require("./routes/orders");
 const admin = require("./routes/admin");
-
+const usersRoutes = require("./routes/user");
+const contactRoutes = require("./routes/contact");
 // CREATE EXPRESS SERVER
 const app = express();
 
@@ -15,7 +16,8 @@ app.use(express.json());
 // APP ROUTES
 app.use("/orders", OrderRouter);
 app.use("/fury/admin", admin);
-
+app.use("/fury", usersRoutes); // Users Routes
+app.use("/furycontact", contactRoutes); // Contacts Routes
 mongoose
   .connect(process.env.DB_CONNECTION_URL, {
     useNewUrlParser: true,
