@@ -9,6 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const {
    registrationUserValidation,
    loginValidation,
+   updateUserValidation,
 } = require("../validation/user");
 
 // CREATE NEW USER
@@ -61,7 +62,7 @@ userRouter.post("/users", async (req, res) => {
       // Set Token
       const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET);
       // // Add to Header
-      res.header("auth-token", token);
+      res.header("x-authToken", token);
       res.status(200).json({
          message: "SuccessFully Registered",
          token,
@@ -76,6 +77,15 @@ userRouter.get("/users", async (req, res) => {
    try {
       let users = await userModel.find();
       res.send(users);
+   } catch (error) {
+      return res.status(500).send("error", error.message);
+   }
+});
+
+userRouter.get("/users/:userId", async (req, res) => {
+   try {
+      let user = await userModel.findById(req.params.userId);
+      res.send(user);
    } catch (error) {
       return res.status(500).send("error", error.message);
    }
@@ -106,6 +116,46 @@ userRouter.post("/users/login", async (req, res) => {
       message: "SuccessFully Logged In",
       token,
    });
+});
+
+
+userRouter.put("/users/:userId", async (req, res) => {
+   const { error } = updateUserValidation(req.body);
+   if (error) return res.status(400).send(error.details[0].message);
+
+   try {
+      let user = await userModel.findById(req.params.userId);
+      if (!user) {
+         res.status(404).json({ message: "User Cannot found! please check the Id" });
+      }
+      else {
+         let str1 = "0";
+         let str2 = user.phone_number;
+         let i = 0;
+         if (user.name != req.body.name) {
+            user.name = req.body.name;
+            i++;
+
+         }
+         if (str1.concat(str2) != req.body.phone_number) {
+            user.phone_number = req.body.phone_number;
+            i++;
+         }
+         if (JSON.stringify(user.address) != JSON.stringify(req.body.address)) {
+            user.address = req.body.address;
+            i++;
+         }
+
+         if (i > 0) {
+            let updatedUser = await user.save();
+            res.status(200).json({ message: "Successfully Updated!" });
+            console.log(nDate);
+         }
+
+      }
+   } catch (e) {
+      res.status(400).send(e.message);
+   }
 });
 
 // DELETE SPECIFIC USERS

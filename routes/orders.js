@@ -10,7 +10,7 @@ OrderRouter.post("/", verify, async (req, res) => {
    if (error) return res.status(400).send(error.details[0].message);
 
    // add Decode
-   const id = jwt_decode(req.headers.authtoken);
+   const id = jwt_decode(req.header("x-authToken"));
 
    let items = [];
    for (var key in req.body.items) {
@@ -93,7 +93,6 @@ OrderRouter.put("/:order_id", async (req, res) => {
          if (req.body.payment_type) {
             order.payment_type = req.body.payment_type;
          }
-         order.modified_date = Date.now();
          try {
             let updated_order = await order.save();
             res.status(200).send(updated_order);
