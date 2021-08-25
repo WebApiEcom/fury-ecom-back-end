@@ -59,7 +59,10 @@ userRouter.post("/users", async (req, res) => {
          });
 
       // Set Token
-      const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET);
+      const token = jwt.sign(
+         { email: savedUser.email },
+         process.env.TOKEN_SECRET
+      );
       // // Add to Header
       res.header("auth-token", token);
       res.status(200).json({
@@ -98,7 +101,10 @@ userRouter.post("/users/login", async (req, res) => {
    if (!passCheck) return res.status(400).send("Invalid password");
 
    // Set Token
-   const token = jwt.sign({ _id: userExists.id }, process.env.TOKEN_SECRET);
+   const token = jwt.sign(
+      { email: userExists.email },
+      process.env.TOKEN_SECRET
+   );
 
    // // Add to Header
    res.header("auth-token", token);
