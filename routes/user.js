@@ -87,7 +87,7 @@ userRouter.get("/users/:email", async (req, res) => {
 
    const emailDecode = jwt_decode(req.params.email);
    try {
-      let user = await userModel.findOne({ email:emailDecode.email });
+      let user = await userModel.findOne({ email: emailDecode.email });
       res.send(user);
    } catch (error) {
       return res.status(500).send("error", error.message);
@@ -124,23 +124,22 @@ userRouter.post("/users/login", async (req, res) => {
 
 userRouter.put("/users/:userId", async (req, res) => {
    const { error } = updateUserValidation(req.body);
-   if (error) return res.status(400).send(error.details[0].message);
+   if (error) return res.status(400).send(error.message);
 
    try {
       let user = await userModel.findById(req.params.userId);
       if (!user) {
-         res.status(404).json({ message: "User Cannot found! please check the Id" });
+         res.status(404).send("User Cannot found! please check the Id");
       }
       else {
-         let str1 = "0";
-         let str2 = user.phone_number;
+
          let i = 0;
          if (user.name != req.body.name) {
             user.name = req.body.name;
             i++;
 
          }
-         if (str1.concat(str2) != req.body.phone_number) {
+         if (user.phone_number != req.body.phone_number) {
             user.phone_number = req.body.phone_number;
             i++;
          }
@@ -151,8 +150,7 @@ userRouter.put("/users/:userId", async (req, res) => {
 
          if (i > 0) {
             let updatedUser = await user.save();
-            res.status(200).json({ message: "Successfully Updated!" });
-            console.log(nDate);
+            res.status(200).send("Successfully Updated!");
          }
 
       }
