@@ -61,7 +61,10 @@ userRouter.post("/users", async (req, res) => {
          });
 
       // Set Token
-      const token = jwt.sign({ email: savedUser.email }, process.env.TOKEN_SECRET);
+      const token = jwt.sign(
+         { email: savedUser.email },
+         process.env.TOKEN_SECRET
+      );
       // // Add to Header
       res.header("x-authToken", token);
       res.status(200).json({
@@ -121,8 +124,8 @@ userRouter.post("/users/login", async (req, res) => {
    });
 });
 
-
 userRouter.put("/users/:userId", async (req, res) => {
+
    const { error } = updateUserValidation(req.body);
    if (error) return res.status(400).send(error.message);
 
@@ -153,6 +156,10 @@ userRouter.put("/users/:userId", async (req, res) => {
             res.status(200).send("Successfully Updated!");
          }
 
+         if (i > 0) {
+            let updatedUser = await user.save();
+            res.status(200).json({ message: "Successfully Updated!" });
+         }
       }
    } catch (e) {
       res.status(400).send(e.message);
