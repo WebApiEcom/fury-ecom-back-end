@@ -27,7 +27,7 @@ userRouter.post("/users", async (req, res) => {
 
   // Hash Password
   const salt = await bencrypt.genSalt(10);
-  const hashPassword = await bencrypt.hash(req.body.password, salt);
+  // const hashPassword = await bencrypt.hash(req.body.password, salt);
 
   // Regsiter new user
   const user = new userModel({
@@ -36,7 +36,7 @@ userRouter.post("/users", async (req, res) => {
     phone_number: req.body.phone_number,
     address: req.body.address,
     userType: req.body.userType,
-    password: hashPassword,
+    // password: hashPassword,
   });
 
   try {
@@ -87,6 +87,44 @@ userRouter.get("/users", async (req, res) => {
 });
 
 userRouter.get("/users/:email", async (req, res) => {
+  // const emailDecode = jwt_decode(req.params.email);
+  try {
+    let user = await userModel.findOne({ email: req.params.email });
+
+    if (!user) {
+      result = {
+        message: "No user avalable",
+        isUser: false,
+      };
+      return res.status(200).send(result);
+    } else {
+      // Set Token
+      const token = jwt.sign(
+        { email: req.params.email },
+        process.env.TOKEN_SECRET
+      );
+
+      result = {
+        message: "User is avalable",
+        isUser: true,
+        user: user,
+        token: token,
+      };
+      res.status(200).send(result);
+    }
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+  // const emailDecode = jwt_decode(req.params.email);
+  // try {
+  //   let user = await userModel.findOne({ email: emailDecode.email });
+  //   res.send(user);
+  // } catch (error) {
+  //   return res.status(500).send("error", error.message);
+  // }
+});
+
+userRouter.get("/users/verify/:email", async (req, res) => {
   const emailDecode = jwt_decode(req.params.email);
   try {
     let user = await userModel.findOne({ email: emailDecode.email });
