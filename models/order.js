@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 
 const OrderSchema = new mongoose.Schema({
-    user_id: { type: String, require: true },
+    email: { type: String, require: true },
     total: { type: Number, require: true, min: [1, 'Total cannot be zero'] },
     items: [{
         item_id: { type: String, require: true },

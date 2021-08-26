@@ -3,6 +3,7 @@ const userRouter = express.Router();
 const userModel = require("../models/user");
 const bencrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const jwt_decode = require("jwt-decode");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -60,7 +61,7 @@ userRouter.post("/users", async (req, res) => {
          });
 
       // Set Token
-      const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET);
+      const token = jwt.sign({ email: savedUser.email }, process.env.TOKEN_SECRET);
       // // Add to Header
       res.header("x-authToken", token);
       res.status(200).json({
@@ -82,9 +83,11 @@ userRouter.get("/users", async (req, res) => {
    }
 });
 
-userRouter.get("/users/:userId", async (req, res) => {
+userRouter.get("/users/:email", async (req, res) => {
+
+   const emailDecode = jwt_decode(req.params.email);
    try {
-      let user = await userModel.findById(req.params.userId);
+      let user = await userModel.findOne({ email:emailDecode.email });
       res.send(user);
    } catch (error) {
       return res.status(500).send("error", error.message);
@@ -108,7 +111,7 @@ userRouter.post("/users/login", async (req, res) => {
    if (!passCheck) return res.status(400).send("Invalid password");
 
    // Set Token
-   const token = jwt.sign({ _id: userExists.id }, process.env.TOKEN_SECRET);
+   const token = jwt.sign({ email: userExists.email }, process.env.TOKEN_SECRET);
 
    // // Add to Header
    res.header("auth-token", token);
