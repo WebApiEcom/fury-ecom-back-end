@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 
 const OrderSchema = new mongoose.Schema({
-    user_id: { type: String, require: true },
+    email: { type: String, require: true },
     total: { type: Number, require: true, min: [1, 'Total cannot be zero'] },
     items: [{
         item_id: { type: String, require: true },
@@ -13,9 +13,9 @@ const OrderSchema = new mongoose.Schema({
         amount: { type: Number, require: true, min: [1, 'Amount cannot be zero'] },
         img_url: { type: String, require: true }
     }],
-    payment_type: { type: String, require: true },
-    created_date: { type: Date, default: Date.now },
-    modified_date: { type: Date, default: Date.now }
-});
+    payment_type: { type: String, require: true }
+},
+    { timestamps: true }
+);
 
 module.exports = mongoose.model("Order", OrderSchema);

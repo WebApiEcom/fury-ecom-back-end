@@ -8,6 +8,8 @@ const usersRoutes = require("./routes/user");
 const contactRoutes = require("./routes/contact");
 const client = require("./routes/client");
 
+
+
 // CREATE EXPRESS SERVER
 const app = express();
 

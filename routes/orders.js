@@ -5,12 +5,12 @@ const { orderValidations } = require("../validation/order");
 const verify = require("../middlewares/verify_token");
 const jwt_decode = require("jwt-decode");
 
-OrderRouter.post("/", verify, async (req, res) => {
+OrderRouter.post("/",verify, async (req, res) => {
    const { error } = orderValidations(req.body);
    if (error) return res.status(400).send(error.details[0].message);
 
    // add Decode
-   const id = jwt_decode(req.headers.authtoken);
+   const emailDecode = jwt_decode(req.header("x-authToken"));
 
    let items = [];
    for (var key in req.body.items) {
@@ -28,7 +28,7 @@ OrderRouter.post("/", verify, async (req, res) => {
    }
 
    let order = new OrderModel({
-      user_id: id,
+      email: emailDecode.email,
       total: req.body.total,
       items: items,
       payment_type: req.body.payment_type,
@@ -37,7 +37,7 @@ OrderRouter.post("/", verify, async (req, res) => {
       const newOrder = await order.save();
       res.status(200).send(newOrder);
    } catch (e) {
-      res.send(e.message);
+      res.status(400).send(e.message);
    }
 });
 
@@ -93,7 +93,6 @@ OrderRouter.put("/:order_id", async (req, res) => {
          if (req.body.payment_type) {
             order.payment_type = req.body.payment_type;
          }
-         order.modified_date = Date.now();
          try {
             let updated_order = await order.save();
             res.status(200).send(updated_order);
