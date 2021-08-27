@@ -86,6 +86,7 @@ userRouter.get("/users", async (req, res) => {
   }
 });
 
+// CHECKING BY THE EMAIL USER IS EXIST OR NOT, IF EXIST SEND THE USER'S TOKEN, IF NOT SEND A MESSAGE USER IS NOT EXIST ( THIS API CALL IS HAPPEN IN CART PAGE IN ONPLACE ORDER FUNCTION)
 userRouter.get("/users/:email", async (req, res) => {
   // const emailDecode = jwt_decode(req.params.email);
   try {
@@ -124,6 +125,7 @@ userRouter.get("/users/:email", async (req, res) => {
   // }
 });
 
+// VERIFYING REDUX SAVED USER TOKEN IS VALID OR NOT WHEN RENDER THE CHECKOUT PAGE
 userRouter.get("/users/verify/:email", async (req, res) => {
   const emailDecode = jwt_decode(req.params.email);
   try {
