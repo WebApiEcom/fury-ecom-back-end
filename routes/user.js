@@ -158,7 +158,7 @@ userRouter.post("/login", async (req, res) => {
    );
 
    // // Add to Header
-   res.header("auth-token", token);
+   res.header("x-authToken", token);
    res.status(200).json({
       message: "SuccessFully Logged In",
       token,
