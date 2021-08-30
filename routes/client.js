@@ -13,22 +13,22 @@ router.get("/products", async (req, res) => {
     res.status(200).send(products);
   } catch (ex) {
     // IF CATCH ANY ERROR DURING THE PROCESS
-    return res.status(500).send("Error", ex.message);
+    return res.status(500).send(ex.message);
   }
 });
 
-//GET WITH PARAMS
+// GET WITH PARAMS
 router.get("/products/:productId", async (req, res) => {
   try {
-    //CHECK ID IS INVALID OR NOT
+    // CHECK ID IS INVALID OR NOT
     if (!mongoose.Types.ObjectId.isValid(req.params.productId)) {
       return res.status(400).send("Given id is invalid");
     }
 
-    //RETRIEVE PRODUCT BY GIVEN ID
+    // RETRIEVE PRODUCT BY GIVEN ID
     let product = await Product.findOne({ _id: req.params.productId });
 
-    //CHECK GIVEN ID IS EXIT OR NOT
+    // CHECK GIVEN ID IS EXIT OR NOT
     if (!product) {
       return res.status(400).send("Given id does not exist");
     }
@@ -37,7 +37,7 @@ router.get("/products/:productId", async (req, res) => {
     res.status(200).send(product);
   } catch (ex) {
     // IF CATCH ANY ERROR DURING THE PROCESS
-    return res.status(500).send("Error", ex.message);
+    return res.status(500).send(ex.message);
   }
 });
 

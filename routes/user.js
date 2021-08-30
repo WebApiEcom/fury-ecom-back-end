@@ -8,13 +8,13 @@ const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const {
-   registrationUserValidation,
-   loginValidation,
-   updateUserValidation,
+  registrationUserValidation,
+  loginValidation,
+  updateUserValidation,
 } = require("../validation/user");
 
 // CREATE NEW USER
-userRouter.post("/users", async (req, res) => {
+userRouter.post("/", async (req, res) => {
   // Validate the Add Users
   const { error } = registrationUserValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -24,10 +24,6 @@ userRouter.post("/users", async (req, res) => {
 
   // get email already error message
   if (emailExists) return res.status(400).send("Email Already Exists");
-
-  // Hash Password
-  const salt = await bencrypt.genSalt(10);
-  // const hashPassword = await bencrypt.hash(req.body.password, salt);
 
   // Regsiter new user
   const user = new userModel({
@@ -42,10 +38,9 @@ userRouter.post("/users", async (req, res) => {
   try {
     const savedUser = await user.save();
 
-    // res.status(201).json(savedUser._id);
     const msg = {
-      to: req.body.email, // Change to your recipient
-      from: "zshtmad@gmail.com", // Change to your verified sender
+      to: req.body.email, // Sender Email
+      from: "zshtmad@gmail.com", // Your Email
       subject: "Welcome Fury Shopping",
       templateId: "d-79977ac64d28481ea2a565d9de6267c1",
     };
@@ -59,23 +54,35 @@ userRouter.post("/users", async (req, res) => {
       .catch((error) => {
         console.error(error);
       });
-   } catch (error) {
-      res.json({ message: error });
-   }
+
+    // Set Token
+    const token = jwt.sign(
+      { email: savedUser.email },
+      process.env.TOKEN_SECRET
+    );
+    // // Add to Header
+    res.header("x-authToken", token);
+    res.status(200).json({
+      message: "SuccessFully Registered",
+      token,
+    });
+  } catch (error) {
+    res.json({ message: error });
+  }
 });
 
 // SHOW ALL USERS
-userRouter.get("/users", async (req, res) => {
-   try {
-      let users = await userModel.find();
-      res.send(users);
-   } catch (error) {
-      return res.status(500).send("error", error.message);
-   }
+userRouter.get("/", async (req, res) => {
+  try {
+    let users = await userModel.find();
+    res.send(users);
+  } catch (error) {
+    return res.status(500).send("error", error.message);
+  }
 });
 
 // CHECKING BY THE EMAIL USER IS EXIST OR NOT, IF EXIST SEND THE USER'S TOKEN, IF NOT SEND A MESSAGE USER IS NOT EXIST ( THIS API CALL IS HAPPEN IN CART PAGE IN ONPLACE ORDER FUNCTION)
-userRouter.get("/users/:email", async (req, res) => {
+userRouter.get("/:email", async (req, res) => {
   // const emailDecode = jwt_decode(req.params.email);
   try {
     let user = await userModel.findOne({ email: req.params.email });
@@ -104,17 +111,10 @@ userRouter.get("/users/:email", async (req, res) => {
   } catch (error) {
     return res.status(500).send(error.message);
   }
-  // const emailDecode = jwt_decode(req.params.email);
-  // try {
-  //   let user = await userModel.findOne({ email: emailDecode.email });
-  //   res.send(user);
-  // } catch (error) {
-  //   return res.status(500).send("error", error.message);
-  // }
 });
 
 // VERIFYING REDUX SAVED USER TOKEN IS VALID OR NOT WHEN RENDER THE CHECKOUT PAGE
-userRouter.get("/users/verify/:email", async (req, res) => {
+userRouter.get("/verify/:email", async (req, res) => {
   const emailDecode = jwt_decode(req.params.email);
   try {
     let user = await userModel.findOne({ email: emailDecode.email });
@@ -126,85 +126,81 @@ userRouter.get("/users/verify/:email", async (req, res) => {
 
 // LOGIN ALL USERS
 userRouter.post("/users/login", async (req, res) => {
-   // Validate the Login Users
-   const { error } = loginValidation(req.body);
-   if (error) return res.status(400).send(error.details[0].message);
+  // Validate the Login Users
+  const { error } = loginValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-   const userExists = await userModel.findOne({ email: req.body.email });
+  const userExists = await userModel.findOne({ email: req.body.email });
 
-   if (!userExists) return res.status(400).send("Invalid Email or Password");
+  if (!userExists) return res.status(400).send("Invalid Email or Password");
 
-   const passCheck = await bencrypt.compare(
-      req.body.password,
-      userExists.password
-   );
-   if (!passCheck) return res.status(400).send("Invalid password");
+  const passCheck = await bencrypt.compare(
+    req.body.password,
+    userExists.password
+  );
+  if (!passCheck) return res.status(400).send("Invalid password");
 
-   // Set Token
-   const token = jwt.sign({ email: userExists.email }, process.env.TOKEN_SECRET);
+  // Set Token
+  const token = jwt.sign({ email: userExists.email }, process.env.TOKEN_SECRET);
 
-   // // Add to Header
-   res.header("auth-token", token);
-   res.status(200).json({
-      message: "SuccessFully Logged In",
-      token,
-   });
+  // // Add to Header
+  res.header("auth-token", token);
+  res.status(200).json({
+    message: "SuccessFully Logged In",
+    token,
+  });
 });
 
 userRouter.put("/users/:userId", async (req, res) => {
+  const { error } = updateUserValidation(req.body);
+  if (error) return res.status(400).send(error.message);
 
-   const { error } = updateUserValidation(req.body);
-   if (error) return res.status(400).send(error.message);
-
-   try {
-      let user = await userModel.findById(req.params.userId);
-      if (!user) {
-         res.status(404).send("User Cannot found! please check the Id");
+  try {
+    let user = await userModel.findById(req.params.userId);
+    if (!user) {
+      res.status(404).send("User Cannot found! please check the Id");
+    } else {
+      let i = 0;
+      if (user.name != req.body.name) {
+        user.name = req.body.name;
+        i++;
       }
-      else {
-
-         let i = 0;
-         if (user.name != req.body.name) {
-            user.name = req.body.name;
-            i++;
-
-         }
-         if (user.phone_number != req.body.phone_number) {
-            user.phone_number = req.body.phone_number;
-            i++;
-         }
-         if (JSON.stringify(user.address) != JSON.stringify(req.body.address)) {
-            user.address = req.body.address;
-            i++;
-         }
-
-         if (i > 0) {
-            let updatedUser = await user.save();
-            res.status(200).send("Successfully Updated!");
-         }
-
-         if (i > 0) {
-            let updatedUser = await user.save();
-            res.status(200).json({ message: "Successfully Updated!" });
-         }
+      if (user.phone_number != req.body.phone_number) {
+        user.phone_number = req.body.phone_number;
+        i++;
       }
-   } catch (e) {
-      res.status(400).send(e.message);
-   }
+      if (JSON.stringify(user.address) != JSON.stringify(req.body.address)) {
+        user.address = req.body.address;
+        i++;
+      }
+
+      if (i > 0) {
+        let updatedUser = await user.save();
+        res.status(200).send("Successfully Updated!");
+      }
+
+      if (i > 0) {
+        let updatedUser = await user.save();
+        res.status(200).json({ message: "Successfully Updated!" });
+      }
+    }
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
 });
 
 // DELETE SPECIFIC USERS
-userRouter.delete("/users/:userId", async (req, res) => {
-   let userId = await userModel.findById(req.params.userId);
-   if (!userId) {
-      return res.status(404).send("Enter Invalid User ID");
-   }
-   try {
-      const deleteUser = await userModel.deleteOne({ _id: userId });
-      res.status(200).json(deleteUser);
-   } catch (error) {
-      res.json(error);
-   }
+userRouter.delete("/:userId", async (req, res) => {
+  let userId = await userModel.findById(req.params.userId);
+  if (!userId) {
+    return res.status(404).send("Enter Invalid User ID");
+  }
+  try {
+    const deleteUser = await userModel.deleteOne({ _id: userId });
+    res.status(200).json(deleteUser);
+  } catch (error) {
+    res.json(error);
+  }
 });
 
 module.exports = userRouter;
