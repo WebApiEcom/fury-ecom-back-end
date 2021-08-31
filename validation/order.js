@@ -39,7 +39,7 @@ const orderValidations = (data) => {
         payment_type: Joi.string().required().messages({
             "string.base": `Payment type should be a type of 'text'`,
             "string.empty": `Payment type can't be empty!`,
-            "any.required": `Payment type is a required field`,
+            "any.required": `Please select a payment method`,
         })
     });
 
