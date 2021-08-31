@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // APP ROUTES
-app.use("/orders", OrderRouter);
+app.use("/fury/orders", OrderRouter);
 app.use("/fury/admin", admin);
 app.use("/fury/users", usersRoutes); // Users Routes
 app.use("/furycontact", contactRoutes); // Contacts Routes
