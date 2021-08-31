@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const jwt_decode = require("jwt-decode");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const stripe = require('stripe')(process.env.NODE_APP_STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.NODE_APP_STRIPE_SECRET_KEY);
 
 const {
   registrationUserValidation,
@@ -84,52 +84,52 @@ userRouter.get("/", async (req, res) => {
 
 // CHECKING BY THE EMAIL USER IS EXIST OR NOT, IF EXIST SEND THE USER'S TOKEN, IF NOT SEND A MESSAGE USER IS NOT EXIST ( THIS API CALL IS HAPPEN IN CART PAGE IN ONPLACE ORDER FUNCTION)
 userRouter.get("/:email", async (req, res) => {
-   // const emailDecode = jwt_decode(req.params.email);
-   try {
-      let user = await userModel.findOne({ email: req.params.email });
+  // const emailDecode = jwt_decode(req.params.email);
+  try {
+    let user = await userModel.findOne({ email: req.params.email });
 
-      if (!user) {
-         result = {
-            message: "No user avalable",
-            isUser: false,
-         };
-         return res.status(200).send(result);
-      } else {
-         // Set Token
-         const token = jwt.sign(
-            { email: req.params.email },
-            process.env.TOKEN_SECRET
-         );
+    if (!user) {
+      result = {
+        message: "No user avalable",
+        isUser: false,
+      };
+      return res.status(200).send(result);
+    } else {
+      // Set Token
+      const token = jwt.sign(
+        { email: req.params.email },
+        process.env.TOKEN_SECRET
+      );
 
-         result = {
-            message: "User is avalable",
-            isUser: true,
-            user: user,
-            token: token,
-         };
-         res.status(200).send(result);
-      }
-   } catch (error) {
-      return res.status(500).send(error.message);
-   }
-   // const emailDecode = jwt_decode(req.params.email);
-   // try {
-   //   let user = await userModel.findOne({ email: emailDecode.email });
-   //   res.send(user);
-   // } catch (error) {
-   //   return res.status(500).send("error", error.message);
-   // }
+      result = {
+        message: "User is avalable",
+        isUser: true,
+        user: user,
+        token: token,
+      };
+      res.status(200).send(result);
+    }
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+  // const emailDecode = jwt_decode(req.params.email);
+  // try {
+  //   let user = await userModel.findOne({ email: emailDecode.email });
+  //   res.send(user);
+  // } catch (error) {
+  //   return res.status(500).send("error", error.message);
+  // }
 });
 
 // VERIFYING REDUX SAVED USER TOKEN IS VALID OR NOT WHEN RENDER THE CHECKOUT PAGE
 userRouter.get("/verify/:email", async (req, res) => {
-   const emailDecode = jwt_decode(req.params.email);
-   try {
-      let user = await userModel.findOne({ email: emailDecode.email });
-      res.send(user);
-   } catch (error) {
-      return res.status(500).send("error", error.message);
-   }
+  const emailDecode = jwt_decode(req.params.email);
+  try {
+    let user = await userModel.findOne({ email: emailDecode.email });
+    res.send(user);
+  } catch (error) {
+    return res.status(500).send("error", error.message);
+  }
 });
 
 // LOGIN ALL USERS
@@ -185,28 +185,25 @@ userRouter.put("/:userId", async (req, res) => {
       if (i > 0) {
         let updatedUser = await user.save();
         res.status(200).send("Successfully Updated!");
-      }
-      else {
+      } else {
+        let i = 0;
+        if (user.name != req.body.name) {
+          user.name = req.body.name;
+          i++;
+        }
+        if (user.phone_number != req.body.phone_number) {
+          user.phone_number = req.body.phone_number;
+          i++;
+        }
+        if (JSON.stringify(user.address) != JSON.stringify(req.body.address)) {
+          user.address = req.body.address;
+          i++;
+        }
 
-         let i = 0;
-         if (user.name != req.body.name) {
-            user.name = req.body.name;
-            i++;
-
-         }
-         if (user.phone_number != req.body.phone_number) {
-            user.phone_number = req.body.phone_number;
-            i++;
-         }
-         if (JSON.stringify(user.address) != JSON.stringify(req.body.address)) {
-            user.address = req.body.address;
-            i++;
-         }
-
-         if (i > 0) {
-            let updatedUser = await user.save();
-            res.status(200).send("Successfully Updated!");
-         }
+        if (i > 0) {
+          let updatedUser = await user.save();
+          res.status(200).send("Successfully Updated!");
+        }
       }
     }
   } catch (e) {
@@ -229,17 +226,13 @@ userRouter.delete("/:userId", async (req, res) => {
 });
 
 userRouter.get("/sources/:cardid", async (req, res) => {
-   
-   try {
-      const cid = req.params.cardid;
-      const card = await stripe.paymentMethods.retrieve(`${cid.trim()}`);
-      res.status(200).send(card);
-   } catch (error) {
-      res.status(400).send(error);
-   }
-
+  try {
+    const cid = req.params.cardid;
+    const card = await stripe.paymentMethods.retrieve(`${cid.trim()}`);
+    res.status(200).send(card);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
-
-
 
 module.exports = userRouter;

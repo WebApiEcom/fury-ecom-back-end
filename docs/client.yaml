@@ -1,0 +1,29 @@
+paths:
+  /fury/client/products: # path of the user from your endpoint
+    get: # endpoint request type (post request)
+      description: Get all products
+      tags: # Tag property
+        - Client # Value of the tag
+      # summary: Get all products
+      produces:
+        - application/json
+      responses: # server responses
+        200:
+          description: An array object with product details
+
+  /fury/client/products/{productId}: # path of the user from your endpoint
+    get: # endpoint request type (post request)
+      description: Get specific product
+      tags: # Tag property
+        - Client # Value of the tag
+      produces:
+        - application/json
+      parameters: # request parameters
+        - name: productId # name of parameter passed
+          in: path # parameters in the path
+          description: path parameter takes the product ID
+          required: true
+          type: string
+      responses: # server responses
+        200:
+          description: An object with product details
