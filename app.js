@@ -7,8 +7,8 @@ const admin = require("./routes/admin");
 const usersRoutes = require("./routes/user");
 const contactRoutes = require("./routes/contact");
 const client = require("./routes/client");
-
-
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUI = require("swagger-ui-express");
 
 // CREATE EXPRESS SERVER
 const app = express();
@@ -17,8 +17,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// SWAGGER DEFINETION
+const swaggerDefinition = {
+  info: {
+    title: "FURY APIs",
+    version: "1.0.0",
+    // description: "This is the REST API for fury",
+  },
+  host: "localhost:4000",
+  basePath: "/",
+};
+
+// OPTIONS FOR SWAGGER DOCS
+const options = {
+  swaggerDefinition,
+  apis: ["./docs/**/*.yaml"],
+};
+// INITIALIZE THE SWAGGER DOCS
+const swaggerSpec = swaggerJsDoc(options);
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 // APP ROUTES
-app.use("/orders", OrderRouter);
+app.use("/fury/orders", OrderRouter);
 app.use("/fury/admin", admin);
 app.use("/fury/users", usersRoutes); // Users Routes
 app.use("/furycontact", contactRoutes); // Contacts Routes

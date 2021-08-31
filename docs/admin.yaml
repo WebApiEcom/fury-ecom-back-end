@@ -1,0 +1,116 @@
+paths:
+  /fury/admin/products:
+    get:
+      description: Get all products for admin dashboard
+      tags:
+        - Admin
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with product details
+
+    post:
+      description: Create a product
+      tags:
+        - Admin
+      parameters:
+        - name: task
+          in: body
+          description: Product object
+          required: true
+          schema:
+            $ref: "#/definitions/NewProduct"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An object with product details
+
+  /fury/admin/products/{productId}:
+    get:
+      description: Get specific product for admin dashboard
+      tags:
+        - Admin
+      produces:
+        - application/json
+      parameters:
+        - name: productId
+          in: path
+          description: path parameter takes the product ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: An object with product details
+
+    put:
+      description: Update a product
+      tags:
+        - Admin
+      produces:
+        - application/json
+      parameters:
+        - name: productId
+          in: path
+          description: path parameter takes the product ID
+          required: true
+          type: string
+        - name: task
+          in: body
+          description: Product object
+          required: true
+          schema:
+            $ref: "#/definitions/NewProduct"
+      responses:
+        200:
+          description: An object with product details
+
+    delete:
+      description: Delete specific product
+      tags:
+        - Admin
+      produces:
+        - application/json
+      parameters:
+        - name: productId
+          in: path
+          description: path parameter takes the product ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: An object with product details
+definitions:
+  NewProduct:
+    description: New User object
+    properties:
+      name:
+        type: string
+      qty:
+        type: number
+      imgUrl:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      weight:
+        type: string
+      isActive:
+        type: boolean
+      prices:
+        type: object
+        properties:
+          price:
+            type: string
+          discount:
+            type: string
+    required:
+      - name
+      - qty
+      - imgUrl
+      - category
+      - description
+      - weight
+      - isActive

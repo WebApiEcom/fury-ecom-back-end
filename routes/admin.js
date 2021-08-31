@@ -21,6 +21,7 @@ router.get("/products", async (req, res) => {
 // CREATE A PRODUCT
 router.post("/products", async (req, res) => {
   try {
+    console.log("print", req.body);
     // VALIDATE THE REQ.BODY DATA
     const { error } = productValidation(req.body);
 

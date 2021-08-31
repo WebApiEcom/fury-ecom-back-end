@@ -1,0 +1,78 @@
+paths:
+  /fury/orders:
+    post:
+      description: create order
+      tags:
+        - Order
+      parameters:
+        - name: order
+          in: body
+          description: user array object
+          required: true
+          schema:
+            $ref: "#/definitions/NewOrder"
+        - name: x-authToken
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with user details
+    get:
+      description: retrive all orders
+      tags:
+        - Order
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with user details
+
+  /fury/orders/{orderId}:
+    get:
+      description: create order
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with user details
+
+definitions:
+  NewOrder:
+    description: new order object
+    properties:
+      email:
+        type: string
+      total:
+        type: string
+      payment_type:
+        type: string
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            item_id:
+              type: string
+            item_name:
+              type: string
+            qty:
+              type: number
+            amount:
+              type: number
+            img_url:
+              type: string
+    required:
+      - total
+      - email
+      - payment_type
