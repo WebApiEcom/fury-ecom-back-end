@@ -12,25 +12,10 @@ OrderRouter.post("/",verify, async (req, res) => {
    // add Decode
    const emailDecode = jwt_decode(req.header("x-authToken"));
 
-   let items = [];
-   for (var key in req.body.items) {
-      if (req.body.items.hasOwnProperty(key)) {
-         let value = req.body.items[key];
-         items.push({
-            item_id: value.item_id,
-            item_name: value.item_name,
-            price: value.price,
-            qty: value.qty,
-            amount: value.amount,
-            img_url: value.img_url
-         });
-      }
-   }
-
    let order = new OrderModel({
       email: emailDecode.email,
       total: req.body.total,
-      items: items,
+      items: req.body.items,
       payment_type: req.body.payment_type,
    });
    try {
@@ -62,7 +47,7 @@ OrderRouter.get("/", async (req, res) => {
    }
 });
 
-OrderRouter.put("/:order_id", async (req, res) => {
+/*OrderRouter.put("/:order_id", async (req, res) => {
    const { error } = orderValidations(req.body);
    if (error) return res.status(400).send(error.details[0].message);
 
@@ -101,7 +86,7 @@ OrderRouter.put("/:order_id", async (req, res) => {
          }
       }
    } catch (e) { }
-});
+});*/
 
 OrderRouter.delete("/:orderId", async (req, res) => {
    try {
@@ -111,4 +96,6 @@ OrderRouter.delete("/:orderId", async (req, res) => {
       res.status(500).send(e.message);
    }
 });
+
+
 module.exports = OrderRouter;
