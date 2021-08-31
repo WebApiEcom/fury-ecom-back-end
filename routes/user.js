@@ -83,7 +83,7 @@ userRouter.get("/", async (req, res) => {
 });
 
 // CHECKING BY THE EMAIL USER IS EXIST OR NOT, IF EXIST SEND THE USER'S TOKEN, IF NOT SEND A MESSAGE USER IS NOT EXIST ( THIS API CALL IS HAPPEN IN CART PAGE IN ONPLACE ORDER FUNCTION)
-userRouter.get("/users/:email", async (req, res) => {
+userRouter.get("/:email", async (req, res) => {
   // const emailDecode = jwt_decode(req.params.email);
   try {
     let user = await userModel.findOne({ email: req.params.email });
@@ -122,7 +122,7 @@ userRouter.get("/users/:email", async (req, res) => {
 });
 
 // VERIFYING REDUX SAVED USER TOKEN IS VALID OR NOT WHEN RENDER THE CHECKOUT PAGE
-userRouter.get("/users/verify/:email", async (req, res) => {
+userRouter.get("/verify/:email", async (req, res) => {
   const emailDecode = jwt_decode(req.params.email);
   try {
     let user = await userModel.findOne({ email: emailDecode.email });
@@ -133,7 +133,7 @@ userRouter.get("/users/verify/:email", async (req, res) => {
 });
 
 // LOGIN ALL USERS
-userRouter.post("/users/login", async (req, res) => {
+userRouter.post("/login", async (req, res) => {
   // Validate the Login Users
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -159,7 +159,7 @@ userRouter.post("/users/login", async (req, res) => {
   });
 });
 
-userRouter.put("/users/:userId", async (req, res) => {
+userRouter.put("/:userId", async (req, res) => {
   const { error } = updateUserValidation(req.body);
   if (error) return res.status(400).send(error.message);
 
@@ -225,7 +225,7 @@ userRouter.delete("/:userId", async (req, res) => {
   }
 });
 
-userRouter.get("/users/sources/:cardid", async (req, res) => {
+userRouter.get("/sources/:cardid", async (req, res) => {
   try {
     const cid = req.params.cardid;
     const card = await stripe.paymentMethods.retrieve(`${cid.trim()}`);
