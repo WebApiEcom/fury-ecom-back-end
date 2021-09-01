@@ -1,24 +1,32 @@
 const express = require("express");
 const OrderRouter = express();
 const OrderModel = require("../models/order");
+const Product = require("../models/product");
 const { orderValidations } = require("../validation/order");
 const verify = require("../middlewares/verify_token");
 const jwt_decode = require("jwt-decode");
 
-OrderRouter.post("/",verify, async (req, res) => {
+OrderRouter.post("/", verify, async (req, res) => {
    const { error } = orderValidations(req.body);
    if (error) return res.status(400).send(error.details[0].message);
 
    // add Decode
    const emailDecode = jwt_decode(req.header("x-authToken"));
 
+   let items = req.body.items;
    let order = new OrderModel({
       email: emailDecode.email,
       total: req.body.total,
-      items: req.body.items,
+      items: items,
       payment_type: req.body.payment_type,
    });
    try {
+
+      items.forEach( async (element) => {
+         let product = await Product.findById({ _id: element.item_id });
+         product.qty = product.qty - element.qty;
+         product = await product.save();
+      });
       const newOrder = await order.save();
       res.status(200).send(newOrder);
    } catch (e) {
