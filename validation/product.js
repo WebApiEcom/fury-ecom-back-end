@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const productValidation = (data) => {
   const nestedPriceSchema = Joi.object().keys({
-    price: Joi.number().required().strict(true).messages({
+    price: Joi.number().greater(0).required().strict(true).messages({
       "number.base": `Price should be a type of 'number'`,
       "number.empty": `Price can't be empty!`,
       "any.required": `Price is a required field`,

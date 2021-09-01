@@ -1,0 +1,32 @@
+paths:
+  /furycontact:
+    post:
+      description: contact submit
+      tags:
+        - Contacts
+      parameters:
+        - name: contacts
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Contact"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Success message
+
+definitions:
+  Contact:
+    properties:
+      fullName:
+        type: string
+      email:
+        type: string
+      message:
+        type: string
+      isActive:
+        type: boolean
+    required:
+      - fullName
+      - email
