@@ -21,7 +21,7 @@ const productValidation = (data) => {
       "any.required": `Product name is a required field`,
     }),
     prices: nestedPriceSchema,
-    qty: Joi.number().required().messages({
+    qty: Joi.number().greater(0).required().messages({
       "number.base": `Quantity should be a type of 'number'`,
       "number.empty": `Quantity can't be empty!`,
       "any.required": `Quantity is a required field`,
