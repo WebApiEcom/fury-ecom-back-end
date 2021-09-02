@@ -121,7 +121,7 @@ userRouter.get("/:email", async (req, res) => {
   // }
 });
 
-// VERIFYING REDUX SAVED USER TOKEN IS VALID OR NOT WHEN RENDER THE CHECKOUT PAGE
+
 userRouter.get("/verify/:email", async (req, res) => {
   const emailDecode = jwt_decode(req.params.email);
   try {
@@ -185,28 +185,10 @@ userRouter.put("/:userId", async (req, res) => {
       if (i > 0) {
         let updatedUser = await user.save();
         res.status(200).send("Successfully Updated!");
-      } else {
-        let i = 0;
-        if (user.name != req.body.name) {
-          user.name = req.body.name;
-          i++;
-        }
-        if (user.phone_number != req.body.phone_number) {
-          user.phone_number = req.body.phone_number;
-          i++;
-        }
-        if (JSON.stringify(user.address) != JSON.stringify(req.body.address)) {
-          user.address = req.body.address;
-          i++;
-        }
-
-        if (i > 0) {
-          let updatedUser = await user.save();
-          res.status(200).send("Successfully Updated!");
-        }
       }
     }
-  } catch (e) {
+  }
+  catch (e) {
     res.status(400).send(e.message);
   }
 });
