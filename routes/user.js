@@ -152,7 +152,7 @@ userRouter.post("/login", async (req, res) => {
   const token = jwt.sign({ email: userExists.email }, process.env.TOKEN_SECRET);
 
   // // Add to Header
-  res.header("auth-token", token);
+  res.header("x-authToken", token);
   res.status(200).json({
     message: "SuccessFully Logged In",
     token,

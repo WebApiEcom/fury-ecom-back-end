@@ -21,7 +21,6 @@ contactRouter.post("/", async (req, res) => {
 
    try {
       const savedContact = await contact.save();
-      // res.status(201).json(savedUser._id);
       const msg = {
          to: req.body.email, // Change to your recipient
          from: "zshtmad@gmail.com", // Change to your verified sender
