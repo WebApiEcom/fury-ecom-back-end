@@ -1,0 +1,102 @@
+paths:
+  /fury/users/login:
+    post:
+      description: Login for users
+      tags:
+        - User
+      parameters:
+        - name: task
+          in: body
+          description: user object
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with user details
+
+  /fury/users:
+    post:
+      description: Create user
+      tags:
+        - User
+      parameters:
+        - name: task
+          in: body
+          description: User object
+          required: true
+          schema:
+            $ref: "#/definitions/NewUser"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with user details
+
+  /fury/users/{userId}:
+    put:
+      description: Update specific user
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          description: path parameter takes the user id
+          required: true
+          type: string
+        - name: task
+          in: body
+          description: User object
+          required: true
+          schema:
+            $ref: "#/definitions/NewUser"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: An array object with user details
+definitions:
+  NewUser:
+    description: New User object
+    properties:
+      name:
+        type: string
+        description: user name
+      email:
+        type: string
+        description: user email
+      phone_number:
+        type: string
+        description: user contact number
+      userType:
+        type: string
+        description: user type
+      address:
+        type: object
+        properties:
+          address_No:
+            type: string
+          lane:
+            type: string
+          city:
+            type: string
+    required:
+      - name
+      - email
+      - phone_number
+      - password
+      - userType
+  User:
+    description: User object
+    properties:
+      email:
+        type: string
+        description: user email
+      password:
+        type: string
+        description: user password
+    required:
+      - email
+      - password
