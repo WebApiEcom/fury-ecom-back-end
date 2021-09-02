@@ -10,12 +10,10 @@ OrderRouter.post("/", verify, async (req, res) => {
   const { error } = orderValidations(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  // add Decode
-  const emailDecode = jwt_decode(req.header("x-authToken"));
 
   let items = req.body.items;
   let order = new OrderModel({
-    email: emailDecode.email,
+    email: req.email,
     total: req.body.total,
     items: items,
     payment_type: req.body.payment_type,

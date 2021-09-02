@@ -8,9 +8,16 @@ module.exports = function (req, res, next) {
 
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-        req.users = verified; //in here DB name req.USER <<<
-        next();
+        if (verified.email)
+        {
+            req.email = verified.email;
+            next();
+        }
+        else
+        {
+            status(400).send("Invalid Token");
+        }   
     } catch (err) {
-        res.status(400).send("Invalid Token");
+        res.status(400).send(err);
     }
 };
