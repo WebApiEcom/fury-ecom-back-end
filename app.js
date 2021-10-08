@@ -49,7 +49,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("connected to mongodb"))
+  .then(() => console.log("connected to mongodb 1.0"))
   .catch((err) => console.log("Getting error with: ", err));
 
 // DEFINE PORT
